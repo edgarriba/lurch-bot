@@ -189,12 +189,14 @@ class Bot(object):
         self.clientRest.add_message(user_id, query)
 
         try:
-            message = wp.summary(query, sentences=1)
+            message = wp.summary(query, sentences=5)
         except wp.exceptions.DisambiguationError as e:
             print e.options
-            message = wp.summary(e.options[0], sentences=1)
+            message = wp.summary(e.options[0], sentences=5)
 
-        return message
+        message = message.splitlines()
+        
+        return message[0]
 
 
     def error(self, bot, update, error):
