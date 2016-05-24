@@ -16,8 +16,7 @@ bot.
 """
 
 import telegram
-from telegram.ext import Updater
-from telegram import InlineQueryResultArticle, ParseMode
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 import logging
 from enum import Enum     # for enum34, or the stdlib version
@@ -65,17 +64,17 @@ class Bot(object):
         self.dp = self.updater.dispatcher
 
         # on different commands - answer in Telegram
-        self.dp.addTelegramCommandHandler("start", self.start)
-        self.dp.addTelegramCommandHandler("help", self.help)
-        self.dp.addTelegramCommandHandler("wikipedia", self.wikipedia)
-        self.dp.addTelegramCommandHandler("stop", self.stop)
-        self.dp.addTelegramCommandHandler("state", self.state)
+        self.dp.add_handler(CommandHandler("start", self.start))
+        self.dp.add_handler(CommandHandler("help", self.help))
+        self.dp.add_handler(CommandHandler("wikipedia", self.wikipedia))
+        self.dp.add_handler(CommandHandler("stop", self.stop))
+        self.dp.add_handler(CommandHandler("state", self.state))
 
         # on noncommand i.e message - echo the message on Telegram
-        self.dp.addTelegramMessageHandler(self.echo)
+        self.dp.add_handler(MessageHandler([Filters.text], self.echo))
 
         # log all errors
-        self.dp.addErrorHandler(self.error)
+        self.dp.add_error_handler(self.error)
 
 
         # Enable logging
@@ -149,7 +148,7 @@ class Bot(object):
             return
 
         text_message = 'May I help you, Sir?'
-        audio_file = open('groan.mp3', 'rb')
+        audio_file = open('data/groan.mp3', 'rb')
 
         bot.sendMessage(
             chat_id=update.message.chat_id,
@@ -158,7 +157,7 @@ class Bot(object):
         bot.sendAudio(update.message.chat_id, audio_file)
 
 
-    def wikipedia(self, bot, update, args):
+    def wikipedia(self, bot, update, args=None):
         chat_id = update.message.chat_id
         user_id = update.message.from_user.id
         text = update.message.text
